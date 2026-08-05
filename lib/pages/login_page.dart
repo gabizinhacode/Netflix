@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -8,11 +9,21 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-
-  bool lembrar = false;
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
+  // Controladores para os campos de email e senha
+  // Estado para mostrar/ocultar senha e lembrar-me
   bool esconderSenha = true;
+  bool lembrar = false;
+
+  void salvarDados() async {
+    //abrir uma instancia do banco
+    dynamic banco = await SharedPreferences.getInstance();
+    //aguarda o banco salvar dentro do celular no campo email o que foi digitado
+    await banco.setString('email', email.text);
+    await banco.setString('password', password.text);
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +43,7 @@ class _LoginPageState extends State<LoginPage> {
                   errorBuilder: (context, error, stackTrace) {
                     return const Text(
                       'Erro ao carregar a logo',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 16,
-                      ),
+                      style: TextStyle(color: Colors.red, fontSize: 16),
                     );
                   },
                 ),
@@ -43,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 50),
 
                 TextField(
-                  controller: emailController,
+                  controller: email,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     filled: true,
@@ -59,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 18),
 
                 TextField(
-                  controller: passwordController,
+                  controller: password,
                   obscureText: esconderSenha,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
@@ -69,9 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                     hintStyle: const TextStyle(color: Colors.grey),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        esconderSenha
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                        esconderSenha ? Icons.visibility_off : Icons.visibility,
                         color: Colors.grey,
                       ),
                       onPressed: () {
@@ -95,7 +101,10 @@ class _LoginPageState extends State<LoginPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      salvarDados();
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                    },
                     child: const Text(
                       "Entrar",
                       style: TextStyle(
@@ -113,9 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () {},
                   child: const Text(
                     "Esqueceu a senha?",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
 
@@ -131,9 +138,7 @@ class _LoginPageState extends State<LoginPage> {
                   controlAffinity: ListTileControlAffinity.leading,
                   title: const Text(
                     "Lembre-se de mim",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
 
@@ -144,9 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     const Text(
                       "Novo por aqui? ",
-                      style: TextStyle(
-                        color: Colors.grey,
-                      ),
+                      style: TextStyle(color: Colors.grey),
                     ),
                     GestureDetector(
                       onTap: () {},
